@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="uk">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FlowTrack — мобільний макет</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+    <script defer src="app.js"></script>
+  </head>
+  <body>
+    <main class="layout">
+      <section class="device-preview" aria-label="Попередній перегляд мобільного застосунку">
+        <div class="phone-frame">
+          <header class="status-bar" aria-hidden="true">
+            <span>09:41</span>
+            <div class="status-icons">
+              <span class="status-icon signal"></span>
+              <span class="status-icon wifi"></span>
+              <span class="status-icon battery"></span>
+            </div>
+          </header>
+          <div class="app-shell" role="application">
+            <header class="app-header">
+              <div>
+                <p class="subtitle" id="screenLabel">Головна</p>
+                <h1 class="title">FlowTrack</h1>
+              </div>
+              <button class="ghost-button" id="quickAction" type="button">
+                Нове завдання
+              </button>
+            </header>
+            <div class="screen" id="screen" tabindex="0" aria-live="polite"></div>
+            <nav class="bottom-nav" aria-label="Основна навігація">
+              <button class="nav-button is-active" data-screen="home" aria-pressed="true">
+                <span class="nav-icon">🏠</span>
+                <span>Головна</span>
+              </button>
+              <button class="nav-button" data-screen="schedule" aria-pressed="false">
+                <span class="nav-icon">🗓️</span>
+                <span>Розклад</span>
+              </button>
+              <button class="nav-button" data-screen="insights" aria-pressed="false">
+                <span class="nav-icon">📊</span>
+                <span>Аналітика</span>
+              </button>
+              <button class="nav-button" data-screen="profile" aria-pressed="false">
+                <span class="nav-icon">👤</span>
+                <span>Профіль</span>
+              </button>
+            </nav>
+          </div>
+        </div>
+      </section>
+      <aside class="notes">
+        <h2>Як тестувати макет з комп’ютера</h2>
+        <ol>
+          <li>Зменшіть ширину вікна браузера до ~420 px або скористайтеся режимом для розробників.</li>
+          <li>Перемикайте вкладки навігації, щоб побачити різні екрани прототипу.</li>
+          <li>Натисніть на картки задач, щоб розгорнути коротку довідку.</li>
+          <li>
+            Використайте кнопку <strong>«Нове завдання»</strong>, щоб швидко додати макетну нотатку
+            до списку справ.
+          </li>
+        </ol>
+        <p>
+          Прототип побудований як звичайний веб-додаток, тому його можна розгорнути на будь-якому HTTP-сервері
+          або відкрити напряму з файлової системи.
+        </p>
+      </aside>
+    </main>
+  </body>
+</html>
