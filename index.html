@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>FlowTrack — мобільний макет</title>
+    <title>Star Battle Sim</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
@@ -14,65 +14,55 @@
     <script defer src="app.js"></script>
   </head>
   <body>
-    <main class="layout">
-      <section class="device-preview" aria-label="Попередній перегляд мобільного застосунку">
-        <div class="phone-frame">
-          <header class="status-bar" aria-hidden="true">
-            <span>09:41</span>
-            <div class="status-icons">
-              <span class="status-icon signal"></span>
-              <span class="status-icon wifi"></span>
-              <span class="status-icon battery"></span>
-            </div>
-          </header>
-          <div class="app-shell" role="application">
-            <header class="app-header">
-              <div>
-                <p class="subtitle" id="screenLabel">Головна</p>
-                <h1 class="title">FlowTrack</h1>
-              </div>
-              <button class="ghost-button" id="quickAction" type="button">
-                Нове завдання
-              </button>
-            </header>
-            <div class="screen" id="screen" tabindex="0" aria-live="polite"></div>
-            <nav class="bottom-nav" aria-label="Основна навігація">
-              <button class="nav-button is-active" data-screen="home" aria-pressed="true">
-                <span class="nav-icon">🏠</span>
-                <span>Головна</span>
-              </button>
-              <button class="nav-button" data-screen="schedule" aria-pressed="false">
-                <span class="nav-icon">🗓️</span>
-                <span>Розклад</span>
-              </button>
-              <button class="nav-button" data-screen="insights" aria-pressed="false">
-                <span class="nav-icon">📊</span>
-                <span>Аналітика</span>
-              </button>
-              <button class="nav-button" data-screen="profile" aria-pressed="false">
-                <span class="nav-icon">👤</span>
-                <span>Профіль</span>
-              </button>
-            </nav>
-          </div>
-        </div>
-      </section>
-      <aside class="notes">
-        <h2>Як тестувати макет з комп’ютера</h2>
-        <ol>
-          <li>Зменшіть ширину вікна браузера до ~420 px або скористайтеся режимом для розробників.</li>
-          <li>Перемикайте вкладки навігації, щоб побачити різні екрани прототипу.</li>
-          <li>Натисніть на картки задач, щоб розгорнути коротку довідку.</li>
-          <li>
-            Використайте кнопку <strong>«Нове завдання»</strong>, щоб швидко додати макетну нотатку
-            до списку справ.
-          </li>
-        </ol>
+    <main class="container">
+      <header class="hero">
+        <p class="eyebrow">Космічна арена</p>
+        <h1>Простий симулятор бою кораблів</h1>
         <p>
-          Прототип побудований як звичайний веб-додаток, тому його можна розгорнути на будь-якому HTTP-сервері
-          або відкрити напряму з файлової системи.
+          Натискай <strong>«Наступний хід»</strong>, щоб розіграти атаку. Можна додати
+          ремонт, критичні удари та ведення журналу бою у стилі Star Wars.
         </p>
-      </aside>
+      </header>
+
+      <section class="battlefield" aria-live="polite">
+        <article class="ship-card" id="rebelCard">
+          <h2>🚀 Повстанці</h2>
+          <p class="ship-name" id="rebelName">X-Wing «Nova»</p>
+          <div class="hp-wrap">
+            <label for="rebelHp">Щити / корпус</label>
+            <progress id="rebelHp" max="100" value="100"></progress>
+            <p class="hp-text" id="rebelHpText">100 / 100</p>
+          </div>
+          <ul class="stats" id="rebelStats"></ul>
+        </article>
+
+        <div class="vs">VS</div>
+
+        <article class="ship-card" id="empireCard">
+          <h2>🛸 Імперія</h2>
+          <p class="ship-name" id="empireName">TIE Interceptor «Razor»</p>
+          <div class="hp-wrap">
+            <label for="empireHp">Щити / корпус</label>
+            <progress id="empireHp" max="100" value="100"></progress>
+            <p class="hp-text" id="empireHpText">100 / 100</p>
+          </div>
+          <ul class="stats" id="empireStats"></ul>
+        </article>
+      </section>
+
+      <section class="controls">
+        <button id="turnButton" type="button">Наступний хід</button>
+        <button id="autoButton" type="button">Автобій до кінця</button>
+        <button id="resetButton" type="button" class="ghost">Перезапуск</button>
+      </section>
+
+      <section class="log-panel">
+        <div class="log-header">
+          <h3>Журнал бою</h3>
+          <p id="statusText">Бій готовий. Хто відкриє вогонь першим?</p>
+        </div>
+        <ol id="battleLog"></ol>
+      </section>
     </main>
   </body>
 </html>
