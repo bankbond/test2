@@ -1,199 +1,184 @@
-const screenElement = document.getElementById('screen');
-const screenLabel = document.getElementById('screenLabel');
-const quickActionButton = document.getElementById('quickAction');
-const navButtons = Array.from(document.querySelectorAll('.nav-button'));
-
-const screens = {
-  home: {
-    label: 'Головна',
-    render: () => `
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Сьогодні</h2>
-          <button class="section-action" type="button">Переглянути все</button>
-        </div>
-        <div class="card-list">
-          ${renderTaskCard({
-            title: 'Фічер: оплата підписки',
-            time: '09:00 – 11:00',
-            tags: ['Дизайн', 'UI kit'],
-          })}
-          ${renderTaskCard({
-            title: 'Зідзвон з маркетингом',
-            time: '13:30 – 14:00',
-            tags: ['Дослідження'],
-          })}
-        </div>
-      </section>
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Фокус</h2>
-          <button class="section-action" type="button">Редагувати</button>
-        </div>
-        <div class="chip-group">
-          <span class="chip">Гейміфікація</span>
-          <span class="chip">Спліт-тести</span>
-          <span class="chip">Ретеншн</span>
-        </div>
-      </section>
-    `,
+const ships = {
+  rebels: {
+    side: 'Повстанці',
+    name: 'X-Wing «Nova»',
+    hp: 100,
+    maxHp: 100,
+    minDamage: 12,
+    maxDamage: 28,
+    critChance: 0.2,
+    evadeChance: 0.18,
   },
-  schedule: {
-    label: 'Розклад',
-    render: () => `
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Спітрек тижня</h2>
-          <button class="section-action" type="button">Синхронізувати</button>
-        </div>
-        <div class="card-list">
-          ${renderTimelineCard({
-            day: 'Пн',
-            items: [
-              { label: 'Онбординг нових користувачів', time: '10:00' },
-              { label: 'UX ревʼю', time: '15:00' },
-            ],
-          })}
-          ${renderTimelineCard({
-            day: 'Вт',
-            items: [
-              { label: 'Команда Growth', time: '09:30' },
-              { label: 'Підготовка презентації', time: '16:00' },
-            ],
-          })}
-        </div>
-      </section>
-    `,
-  },
-  insights: {
-    label: 'Аналітика',
-    render: () => `
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Показники</h2>
-          <button class="section-action" type="button">Експорт</button>
-        </div>
-        <div class="card-list">
-          ${renderInsightCard({
-            metric: 'Активні користувачі',
-            value: '12 480',
-            trend: '+8.5% з минулого тижня',
-          })}
-          ${renderInsightCard({
-            metric: 'Середній час в застосунку',
-            value: '14 хв',
-            trend: '+1.2 хв',
-          })}
-        </div>
-      </section>
-    `,
-  },
-  profile: {
-    label: 'Профіль',
-    render: () => `
-      <section class="section">
-        <div class="section-header">
-          <h2 class="section-title">Марія Іванчук</h2>
-          <button class="section-action" type="button">Налаштування</button>
-        </div>
-        <div class="card-list">
-          <div class="card" data-card>
-            <h3 class="card-title">Роль</h3>
-            <p class="card-meta">Lead Product Designer</p>
-          </div>
-          <div class="card" data-card>
-            <h3 class="card-title">Цілі на квартал</h3>
-            <p class="card-meta">Запустити нову систему онбордингу та збільшити конверсію активних користувачів.</p>
-          </div>
-        </div>
-      </section>
-    `,
+  empire: {
+    side: 'Імперія',
+    name: 'TIE Interceptor «Razor»',
+    hp: 100,
+    maxHp: 100,
+    minDamage: 10,
+    maxDamage: 30,
+    critChance: 0.22,
+    evadeChance: 0.15,
   },
 };
 
-function renderTaskCard(task) {
-  return `
-    <article class="card" data-card>
-      <h3 class="card-title">${task.title}</h3>
-      <p class="card-meta">${task.time}</p>
-      <div class="chip-group">
-        ${task.tags.map((tag) => `<span class="chip">${tag}</span>`).join('')}
-      </div>
-    </article>
-  `;
+const turnButton = document.getElementById('turnButton');
+const autoButton = document.getElementById('autoButton');
+const resetButton = document.getElementById('resetButton');
+const battleLog = document.getElementById('battleLog');
+const statusText = document.getElementById('statusText');
+
+const ui = {
+  rebels: {
+    card: document.getElementById('rebelCard'),
+    hpBar: document.getElementById('rebelHp'),
+    hpText: document.getElementById('rebelHpText'),
+    stats: document.getElementById('rebelStats'),
+  },
+  empire: {
+    card: document.getElementById('empireCard'),
+    hpBar: document.getElementById('empireHp'),
+    hpText: document.getElementById('empireHpText'),
+    stats: document.getElementById('empireStats'),
+  },
+};
+
+let round = 1;
+let battleFinished = false;
+let autoTimer = null;
+
+function randomInt(min, max) {
+  return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-function renderTimelineCard({ day, items }) {
-  return `
-    <article class="card" data-card>
-      <h3 class="card-title">${day}</h3>
-      ${items.map((item) => `<p class="card-meta">${item.time} · ${item.label}</p>`).join('')}
-    </article>
-  `;
+function chance(probability) {
+  return Math.random() < probability;
 }
 
-function renderInsightCard({ metric, value, trend }) {
-  return `
-    <article class="card" data-card>
-      <h3 class="card-title">${metric}</h3>
-      <strong>${value}</strong>
-      <p class="card-meta">${trend}</p>
-    </article>
-  `;
+function addLog(text) {
+  const item = document.createElement('li');
+  item.textContent = text;
+  battleLog.prepend(item);
 }
 
-function updateScreen(key) {
-  const screen = screens[key];
-  if (!screen) return;
-  screenElement.innerHTML = screen.render();
-  screenLabel.textContent = screen.label;
-  screenElement.focus({ preventScroll: true });
-  navButtons.forEach((button) => {
-    const isActive = button.dataset.screen === key;
-    button.classList.toggle('is-active', isActive);
-    button.setAttribute('aria-pressed', String(isActive));
+function updateShipUi(key) {
+  const ship = ships[key];
+  const block = ui[key];
+  block.hpBar.max = ship.maxHp;
+  block.hpBar.value = ship.hp;
+  block.hpText.textContent = `${ship.hp} / ${ship.maxHp}`;
+  block.stats.innerHTML = `
+    <li>⚡ Урон: ${ship.minDamage}–${ship.maxDamage}</li>
+    <li>🎯 Критичний шанс: ${Math.round(ship.critChance * 100)}%</li>
+    <li>🛡️ Шанс ухилення: ${Math.round(ship.evadeChance * 100)}%</li>
+  `;
+
+  block.card.classList.toggle('destroyed', ship.hp <= 0);
+}
+
+function setCardState(attackerKey, defenderKey) {
+  Object.values(ui).forEach((block) => {
+    block.card.classList.remove('attacking', 'hit');
   });
-  hydrateCards();
+  ui[attackerKey].card.classList.add('attacking');
+  ui[defenderKey].card.classList.add('hit');
 }
 
-function hydrateCards() {
-  const cards = screenElement.querySelectorAll('[data-card]');
-  cards.forEach((card) => {
-    card.addEventListener('click', () => {
-      const meta = card.querySelector('.card-meta');
-      if (!meta) return;
-      const expanded = card.dataset.expanded === 'true';
-      if (expanded) {
-        card.dataset.expanded = 'false';
-        meta.textContent = meta.dataset.original;
-      } else {
-        meta.dataset.original = meta.textContent;
-        card.dataset.expanded = 'true';
-        meta.textContent = 'Нотатка: це демо-картка для тестування сценаріїв.';
-      }
-    });
+function clearCardState() {
+  Object.values(ui).forEach((block) => {
+    block.card.classList.remove('attacking', 'hit');
   });
 }
 
-navButtons.forEach((button) => {
-  button.addEventListener('click', () => updateScreen(button.dataset.screen));
-});
+function attack(attackerKey, defenderKey) {
+  const attacker = ships[attackerKey];
+  const defender = ships[defenderKey];
 
-quickActionButton.addEventListener('click', () => {
-  const list = screenElement.querySelector('.card-list');
-  if (!list) return;
-  const mockCard = document.createElement('article');
-  mockCard.className = 'card';
-  mockCard.innerHTML = `
-    <h3 class="card-title">Нова макетна задача</h3>
-    <p class="card-meta">Додана о ${new Date().toLocaleTimeString('uk-UA', {
-      hour: '2-digit',
-      minute: '2-digit',
-    })}</p>
-  `;
-  mockCard.dataset.card = '';
-  list.prepend(mockCard);
-  hydrateCards();
-});
+  setCardState(attackerKey, defenderKey);
 
-updateScreen('home');
+  if (chance(defender.evadeChance)) {
+    addLog(`Раунд ${round}: ${defender.name} ухиляється від атаки ${attacker.name}.`);
+    return;
+  }
+
+  let damage = randomInt(attacker.minDamage, attacker.maxDamage);
+  let critical = false;
+
+  if (chance(attacker.critChance)) {
+    damage = Math.round(damage * 1.6);
+    critical = true;
+  }
+
+  defender.hp = Math.max(0, defender.hp - damage);
+
+  const critText = critical ? ' КРИТИЧНЕ влучання!' : '';
+  addLog(
+    `Раунд ${round}: ${attacker.name} завдає ${damage} шкоди по ${defender.name}.${critText}`,
+  );
+
+  updateShipUi(defenderKey);
+
+  if (defender.hp <= 0) {
+    battleFinished = true;
+    statusText.textContent = `🏆 Перемога: ${attacker.side}! ${defender.name} знищено.`;
+    addLog(`БІЙ ЗАВЕРШЕНО: ${attacker.side} перемагають у раунді ${round}.`);
+    stopAutoBattle();
+    clearCardState();
+    turnButton.disabled = true;
+    autoButton.disabled = true;
+  }
+}
+
+function playRound() {
+  if (battleFinished) {
+    return;
+  }
+
+  const attackerKey = Math.random() < 0.5 ? 'rebels' : 'empire';
+  const defenderKey = attackerKey === 'rebels' ? 'empire' : 'rebels';
+
+  statusText.textContent = `Раунд ${round}: атакують ${ships[attackerKey].side}.`;
+  attack(attackerKey, defenderKey);
+  round += 1;
+}
+
+function stopAutoBattle() {
+  if (autoTimer) {
+    clearInterval(autoTimer);
+    autoTimer = null;
+  }
+}
+
+function startAutoBattle() {
+  if (battleFinished || autoTimer) {
+    return;
+  }
+
+  autoTimer = setInterval(() => {
+    playRound();
+    if (battleFinished) {
+      stopAutoBattle();
+    }
+  }, 500);
+}
+
+function resetBattle() {
+  ships.rebels.hp = ships.rebels.maxHp;
+  ships.empire.hp = ships.empire.maxHp;
+  round = 1;
+  battleFinished = false;
+  stopAutoBattle();
+  turnButton.disabled = false;
+  autoButton.disabled = false;
+  battleLog.innerHTML = '';
+  statusText.textContent = 'Бій готовий. Хто відкриє вогонь першим?';
+  clearCardState();
+  updateShipUi('rebels');
+  updateShipUi('empire');
+  addLog('Системи активовано. Обидва кораблі входять у бій.');
+}
+
+turnButton.addEventListener('click', playRound);
+autoButton.addEventListener('click', startAutoBattle);
+resetButton.addEventListener('click', resetBattle);
+
+resetBattle();
